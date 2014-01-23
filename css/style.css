@@ -1,0 +1,53 @@
+@font-face {
+    font-family: "Oswald";
+    src: url("fonts/Oswald-Regular.ttf");
+}
+@font-face {
+    font-family: "Oswald";
+    src: url("fonts/Oswald-Bold.ttf");
+    font-weight: bold;
+}
+
+body {
+    font-family: "Oswald";
+    font: 10px;
+    background-color: #bfd36a;
+}
+.innertext {
+    fill: #8C8C8C;
+    font-size: 30px;
+    font-weight: bold;
+}
+.outertext {
+    fill: white;
+}
+.viz {
+    margin-left: 20px;
+}
+.innercircle {
+    fill: white;
+}
+.outercircle {
+    fill: none;
+    stroke: white;
+    stroke-width: 15;
+}
+.smallcircle {
+    stroke: white;
+    stroke-width: 6;
+}
+.topcircle {
+    fill: #87a43d;
+}
+.rightcircle {
+    fill: #f38b00;
+}
+.leftcircle {
+    fill: #00b188;
+}
+.bottomcircle {
+    fill: #0095bf;
+}
+.greycircle {
+    fill: #8C8C8C;
+}

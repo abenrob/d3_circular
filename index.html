@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<body>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+
+//globals
+var margin = {top: 10, right: 10, bottom: 10, left: 10},
+    width = 700 - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom,
+    innerradius = height / 5,
+    smallradius = height / 11,
+    innersquareedge = Math.sqrt(Math.pow((innerradius * 2),2) / 2),
+    outerradius = height / 3;
+
+function getXY(classList, reset){
+    reset = reset || false;
+    var addon = 65;
+    if (classList.contains('topcircle')){
+        if (!reset){return {"x":width / 2, "y": height / 2 + margin.top - outerradius - addon}}
+        else {return {"x":width / 2, "y": height / 2 + margin.top - outerradius}}
+    } else if (classList.contains('bottomcircle')){
+        if (!reset){return {"x":width / 2, "y": height / 2 + margin.top + outerradius + addon}}
+        else {return {"x":width / 2, "y": height / 2 + margin.top + outerradius}}
+    } else if (classList.contains('rightcircle')){
+        if (!reset){return {"x":width / 2  + outerradius + addon, "y": height / 2 + margin.top}}
+        else {return {"x":width / 2  + outerradius, "y": height / 2 + margin.top}}
+    } else if (classList.contains('leftcircle')){
+        if (!reset){return {"x":width / 2  - outerradius - addon, "y": height / 2 + margin.top}}
+        else {return {"x":width / 2  - outerradius, "y": height / 2 + margin.top}}
+    }
+}
+
+function buildChart(){
+
+    var svg = d3.select("body")
+        .append("svg")
+            .attr("class","viz")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+    //Draw the Rectangle
+
+    var innercircle = svg.append("g");
+
+    innercircle.append("circle")
+        .classed("innergroup", true)
+        .classed("innercircle", true)
+        .attr("cx", width / 2)
+        .attr("cy", height / 2 + margin.top)
+        .attr("r", innerradius)
+    innercircle.append("text")
+        .classed("innergroup", true)
+        .classed("innertext", true)
+        .attr("x", width / 2)
+        .attr("y", height / 2 + margin.top)
+        .append("tspan")
+            .attr("x", width / 2)
+            .attr("y", height / 2 + margin.top + 15 - 40)
+            .attr("text-anchor", "middle")
+            .text("TITLE OF")
+        .append("tspan")
+            .attr("x", width / 2)
+            .attr("y", height / 2 + margin.top + 15)
+            .attr("text-anchor", "middle")
+            .text("THE STUDY")
+        .append("tspan")
+            .attr("x", width / 2)
+            .attr("y", height / 2 + margin.top + 15 + 40)
+            .attr("text-anchor", "middle")
+            .text("GOES HERE")
+    var outercircle = svg.append("circle")
+        .attr("class", "outercircle")
+        .attr("cx", width / 2)
+        .attr("cy", height / 2 + margin.top)
+        .attr("r", outerradius)
+    var topcircle = svg.append("circle")
+        .classed("topcircle", true)
+        .classed("smallcircle", true)
+        .attr("cx", width / 2)
+        .attr("cy", height / 2 + margin.top - outerradius)
+        .attr("r", smallradius)
+    var rightcircle = svg.append("circle")
+        .classed("rightcircle", true)
+        .classed("smallcircle", true)
+        .attr("cx", width / 2  + outerradius)
+        .attr("cy", height / 2 + margin.top)
+        .attr("r", smallradius)
+    var leftcircle = svg.append("circle")
+        .classed("leftcircle", true)
+        .classed("smallcircle", true)
+        .attr("cx", width / 2  - outerradius)
+        .attr("cy", height / 2 + margin.top)
+        .attr("r", smallradius)
+    var bottomcircle = svg.append("circle")
+        .classed("bottomcircle", true)
+        .classed("smallcircle", true)
+        .attr("cx", width / 2)
+        .attr("cy", height / 2 + margin.top + outerradius)
+        .attr("r", smallradius)
+
+    d3.selectAll(".smallcircle")
+        .on("click",function(d){
+            if ( d3.select(this)[0][0].classList.contains("clicked") ) {
+                var current = d3.select(this)
+                    .classed("clicked", false)
+                var others = d3.selectAll(".greycircle")
+                    .classed("greycircle", false)
+                    
+                others.each(function(){
+                    var xy = getXY(d3.select(this)[0][0].classList,true);
+                    d3.select(this)
+                        .transition()
+                            .attr("r", smallradius)
+                            .attr("cy", xy.y)
+                            .attr("cx", xy.x)
+                        
+                })
+            } else {
+                d3.selectAll(".smallcircle")
+                    .classed("clicked", false)
+                var current = d3.select(this)
+                    .classed("clicked",true)
+                    .classed("greycircle",false)
+                var xy = getXY(d3.select(this)[0][0].classList,true);
+                current.transition()
+                    .attr("r", smallradius)
+                    .attr("cy", xy.y)
+                    .attr("cx", xy.x);
+                
+                var others = d3.selectAll(".smallcircle:not(.clicked)")
+                    .classed("greycircle",true)  
+                others.each(function(){
+                    var xy = getXY(d3.select(this)[0][0].classList);
+                    d3.select(this)
+                        .transition()
+                        .attr("r", smallradius * .6)
+                        .attr("cy", xy.y)
+                        .attr("cx", xy.x);
+                        
+                })
+            }
+        })
+}
+buildChart();
+</script>
