@@ -35,6 +35,7 @@ body {
 .smallcircle {
     stroke: white;
     stroke-width: 6;
+    cursor: pointer;
 }
 .topcircle {
     fill: #87a43d;

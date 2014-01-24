@@ -16,7 +16,7 @@ var margin = {top: 10, right: 10, bottom: 10, left: 10},
 
 function getXY(classList, reset){
     reset = reset || false;
-    var addon = 65;
+    var addon = 60;
     if (classList.contains('topcircle')){
         if (!reset){return {"x":width / 2, "y": height / 2 + margin.top - outerradius - addon}}
         else {return {"x":width / 2, "y": height / 2 + margin.top - outerradius}}
@@ -75,30 +75,62 @@ function buildChart(){
         .attr("cx", width / 2)
         .attr("cy", height / 2 + margin.top)
         .attr("r", outerradius)
-    var topcircle = svg.append("circle")
+    var topcircle = svg.append("g")
         .classed("topcircle", true)
         .classed("smallcircle", true)
-        .attr("cx", width / 2)
-        .attr("cy", height / 2 + margin.top - outerradius)
+        .attr("transform", function(d) { return "translate("+ (width / 2) +","+ (height / 2 + margin.top - outerradius) +")"; });
+    topcircle.append("circle")
+        .attr("cx", 0)
+        .attr("cy", 0)
         .attr("r", smallradius)
-    var rightcircle = svg.append("circle")
+    topcircle.append("svg:image")
+        .attr("xlink:href", "img/icon_CROPS.svg")
+        .attr("x", -50)
+        .attr("y", -50)
+        .attr("width", "100")
+        .attr("height", "100");
+    var rightcircle = svg.append("g")
         .classed("rightcircle", true)
         .classed("smallcircle", true)
-        .attr("cx", width / 2  + outerradius)
-        .attr("cy", height / 2 + margin.top)
+        .attr("transform", function(d) { return "translate("+ (width / 2  + outerradius) +","+ (height / 2 + margin.top) +")"; });
+    rightcircle.append("circle")
+        .attr("cx", 0)
+        .attr("cy", 0)
         .attr("r", smallradius)
-    var leftcircle = svg.append("circle")
+    rightcircle.append("svg:image")
+        .attr("xlink:href", "img/icon_TECHNOLOGIES.svg")
+        .attr("x", -30)
+        .attr("y", -30)
+        .attr("width", "60")
+        .attr("height", "60");
+    var leftcircle = svg.append("g")
         .classed("leftcircle", true)
         .classed("smallcircle", true)
-        .attr("cx", width / 2  - outerradius)
-        .attr("cy", height / 2 + margin.top)
+        .attr("transform", function(d) { return "translate("+ (width / 2  - outerradius) +","+ (height / 2 + margin.top) +")"; });
+    leftcircle.append("circle")
+        .attr("cx", 0)
+        .attr("cy", 0)
         .attr("r", smallradius)
-    var bottomcircle = svg.append("circle")
+    leftcircle.append("svg:image")
+        .attr("xlink:href", "img/icon_CLIMATE.svg")
+        .attr("x", -30)
+        .attr("y", -30)
+        .attr("width", "60")
+        .attr("height", "60");
+    var bottomcircle = svg.append("g")
         .classed("bottomcircle", true)
         .classed("smallcircle", true)
-        .attr("cx", width / 2)
-        .attr("cy", height / 2 + margin.top + outerradius)
+        .attr("transform", function(d) { return "translate("+ (width / 2) +","+ (height / 2 + margin.top + outerradius) +")"; });
+    bottomcircle.append("circle")
+        .attr("cx", 0)
+        .attr("cy", 0)
         .attr("r", smallradius)
+    bottomcircle.append("svg:image")
+        .attr("xlink:href", "img/icon_GEOGRAPHY.svg")
+        .attr("x", -30)
+        .attr("y", -30)
+        .attr("width", "60")
+        .attr("height", "60");
 
     d3.selectAll(".smallcircle")
         .on("click",function(d){
@@ -110,12 +142,8 @@ function buildChart(){
                     
                 others.each(function(){
                     var xy = getXY(d3.select(this)[0][0].classList,true);
-                    d3.select(this)
-                        .transition()
-                            .attr("r", smallradius)
-                            .attr("cy", xy.y)
-                            .attr("cx", xy.x)
-                        
+                    d3.select(this).transition()
+                        .attr("transform", function(d) { return "translate("+ xy.x +","+ xy.y +")scale(1)"})
                 })
             } else {
                 d3.selectAll(".smallcircle")
@@ -125,20 +153,14 @@ function buildChart(){
                     .classed("greycircle",false)
                 var xy = getXY(d3.select(this)[0][0].classList,true);
                 current.transition()
-                    .attr("r", smallradius)
-                    .attr("cy", xy.y)
-                    .attr("cx", xy.x);
+                    .attr("transform", function(d) { return "translate("+ xy.x +","+ xy.y +")scale(1)"})
                 
                 var others = d3.selectAll(".smallcircle:not(.clicked)")
                     .classed("greycircle",true)  
                 others.each(function(){
                     var xy = getXY(d3.select(this)[0][0].classList);
-                    d3.select(this)
-                        .transition()
-                        .attr("r", smallradius * .6)
-                        .attr("cy", xy.y)
-                        .attr("cx", xy.x);
-                        
+                    d3.select(this).transition()
+                        .attr("transform", function(d) { return "translate("+ xy.x +","+ xy.y +")scale(0.7)"})
                 })
             }
         })
