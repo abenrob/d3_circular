@@ -68,12 +68,44 @@ function textOffset(len,idx){
     else if ( len == 3 ) { return [-8,4,16][idx]; }
 }
 
+function resetAll(){
+    // reset all
+    d3.selectAll(".details").transition()
+            .style("opacity",0)
+
+    d3.selectAll(".maintext").transition()
+            .style("opacity",1)
+
+    d3.selectAll(".orbit")
+            .classed("clicked",false)
+            .transition()
+                .style("opacity",0)
+                .attr("transform", function(d) { return "scale(0)"; });
+
+    d3.select(".innercircle").transition()
+            .attr("transform", function(d) { return "translate("+ (width / 2) +","+ (height / 2 + margin.top) +")scale(1)"; });
+
+    var circles = d3.selectAll(".smallcircle")
+        .classed("greycircle", false)
+        .classed("clicked",false)
+    circles.each(function(){
+        var xy = getXY(d3.select(this)[0][0].classList,"reset");
+        d3.select(this).transition()
+            .attr("transform", function(d) { return "translate("+ xy.x +","+ xy.y +")scale(1)"})
+    })
+}
+
 function buildChart(){
     var svg = d3.select("body")
         .append("svg")
             .attr("class","viz")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom);
+
+    var back_rect = svg.append("rect")
+        .classed("back_rect",true)
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom);
 
     var innercircle = svg.append("g")
         .classed("innercircle", true)
@@ -554,32 +586,14 @@ function buildChart(){
         .style("opacity",0)
         .attr("transform", function(d) { return "scale(0)"; });
 
+    d3.select(".back_rect")
+        .on("click",function(d){
+            resetAll();
+        })
+
     d3.select(".innercircle")
         .on("click",function(d){
-            // reset all
-            d3.selectAll(".details").transition()
-                    .style("opacity",0)
-
-            d3.selectAll(".maintext").transition()
-                    .style("opacity",1)
-
-            d3.selectAll(".orbit")
-                    .classed("clicked",false)
-                    .transition()
-                        .style("opacity",0)
-                        .attr("transform", function(d) { return "scale(0)"; });
-
-            d3.select(".innercircle").transition()
-                    .attr("transform", function(d) { return "translate("+ (width / 2) +","+ (height / 2 + margin.top) +")scale(1)"; });
-
-            var circles = d3.selectAll(".smallcircle")
-                .classed("greycircle", false)
-                .classed("clicked",false)
-            circles.each(function(){
-                var xy = getXY(d3.select(this)[0][0].classList,"reset");
-                d3.select(this).transition()
-                    .attr("transform", function(d) { return "translate("+ xy.x +","+ xy.y +")scale(1)"})
-            })
+            resetAll();
         })
 
     d3.selectAll(".smallcircle")

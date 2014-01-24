@@ -13,6 +13,9 @@ body {
     font: 10px;
     background-color: #bfd36a;
 }
+.back_rect {
+    fill: #bfd36a;
+}
 .maintext {
     fill: #8C8C8C;
     font-size: 30px;
