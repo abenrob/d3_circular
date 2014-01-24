@@ -18,6 +18,17 @@ body {
     font-size: 30px;
     font-weight: bold;
 }
+.detailtitle {
+    fill: #8C8C8C;
+    font-size: 24px;
+}
+.detailtext {
+    fill: #8C8C8C;
+    font-size: 16px;
+}
+.hidden {
+    display: none;
+}
 .outertext {
     fill: white;
 }

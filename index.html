@@ -6,13 +6,13 @@
 <script>
 
 //globals
-var margin = {top: 30, right: 10, bottom: 30, left: 10},
+var margin = {top: 40, right: 10, bottom: 40, left: 10},
     width = 700 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom,
     innerradius = height / 5,
     smallradius = height / 11,
     innersquareedge = Math.sqrt(Math.pow((innerradius * 2),2) / 2),
-    outerradius = height / 3;
+    outerradius = height / 2.8;
 
 var plotdata = {
     "crops":["rice","maize","wheat"],
@@ -57,7 +57,6 @@ function buildChart(){
         .attr("cy", 0)
         .attr("r", innerradius)
     innercircle.append("text")
-        .classed("innergroup", true)
         .classed("maintext", true)
         .attr("x", 0)
         .attr("y", 0)
@@ -76,6 +75,131 @@ function buildChart(){
             .attr("y", 15 + 40)
             .attr("text-anchor", "middle")
             .text("GOES HERE")
+
+    innercircle.append("text")
+        .classed("details", true)
+        .classed("croptext", true)
+        .classed("hidden", true)
+        .attr("x", 0)
+        .attr("y", 0)
+        .append("tspan")
+            .classed("detailtitle",true)
+            .attr("x", 0)
+            .attr("y", -38)
+            .attr("text-anchor", "middle")
+            .text("CROPS:")
+        .append("tspan")
+            .classed("detailtext",true)
+            .attr("x", 0)
+            .attr("y", -10)
+            .attr("text-anchor", "middle")
+            .text("lorem ipsum dolor")
+        .append("tspan")
+            .classed("detailtext",true)
+            .attr("x", 0)
+            .attr("y", 18)
+            .attr("text-anchor", "middle")
+            .text("sit amet, consectetur ad")
+        .append("tspan")
+            .classed("detailtext",true)
+            .attr("x", 0)
+            .attr("y", 46)
+            .attr("text-anchor", "middle")
+            .text("sicing elit, sed deiusmod.")
+
+    innercircle.append("text")
+        .classed("details", true)
+        .classed("techtext", true)
+        .classed("hidden", true)
+        .attr("x", 0)
+        .attr("y", 0)
+        .append("tspan")
+            .classed("detailtitle",true)
+            .attr("x", 0)
+            .attr("y", -38)
+            .attr("text-anchor", "middle")
+            .text("TECHNOLOGY:")
+        .append("tspan")
+            .classed("detailtext",true)
+            .attr("x", 0)
+            .attr("y", -10)
+            .attr("text-anchor", "middle")
+            .text("lorem ipsum dolor")
+        .append("tspan")
+            .classed("detailtext",true)
+            .attr("x", 0)
+            .attr("y", 18)
+            .attr("text-anchor", "middle")
+            .text("sit amet, consectetur ad")
+        .append("tspan")
+            .classed("detailtext",true)
+            .attr("x", 0)
+            .attr("y", 46)
+            .attr("text-anchor", "middle")
+            .text("sicing elit, sed deiusmod.")
+
+    innercircle.append("text")
+        .classed("details", true)
+        .classed("geogtext", true)
+        .classed("hidden", true)
+        .attr("x", 0)
+        .attr("y", 0)
+        .append("tspan")
+            .classed("detailtitle",true)
+            .attr("x", 0)
+            .attr("y", -38)
+            .attr("text-anchor", "middle")
+            .text("GEOGRAPHY:")
+        .append("tspan")
+            .classed("detailtext",true)
+            .attr("x", 0)
+            .attr("y", -10)
+            .attr("text-anchor", "middle")
+            .text("lorem ipsum dolor")
+        .append("tspan")
+            .classed("detailtext",true)
+            .attr("x", 0)
+            .attr("y", 18)
+            .attr("text-anchor", "middle")
+            .text("sit amet, consectetur ad")
+        .append("tspan")
+            .classed("detailtext",true)
+            .attr("x", 0)
+            .attr("y", 46)
+            .attr("text-anchor", "middle")
+            .text("sicing elit, sed deiusmod.")
+
+    innercircle.append("text")
+        .classed("details", true)
+        .classed("climatetext", true)
+        .classed("hidden", true)
+        .attr("x", 0)
+        .attr("y", 0)
+        .append("tspan")
+            .classed("detailtitle",true)
+            .attr("x", 0)
+            .attr("y", -38)
+            .attr("text-anchor", "middle")
+            .text("CLIMATE:")
+        .append("tspan")
+            .classed("detailtext",true)
+            .attr("x", 0)
+            .attr("y", -10)
+            .attr("text-anchor", "middle")
+            .text("lorem ipsum dolor")
+        .append("tspan")
+            .classed("detailtext",true)
+            .attr("x", 0)
+            .attr("y", 18)
+            .attr("text-anchor", "middle")
+            .text("sit amet, consectetur ad")
+        .append("tspan")
+            .classed("detailtext",true)
+            .attr("x", 0)
+            .attr("y", 46)
+            .attr("text-anchor", "middle")
+            .text("sicing elit, sed deiusmod.")
+
     var outercircle = svg.append("circle")
         .attr("class", "outercircle")
         .attr("cx", width / 2)
@@ -413,6 +537,10 @@ function buildChart(){
 
     d3.select(".innercircle")
         .on("click",function(d){
+            d3.selectAll(".details")
+                    .classed("hidden",true);
+            d3.selectAll(".maintext")
+                    .classed("hidden",false);
             d3.selectAll(".orbit")
                     .classed("clicked",false)
                     .transition()
@@ -430,8 +558,14 @@ function buildChart(){
 
     d3.selectAll(".smallcircle")
         .on("click",function(d){
+            var currentClasses = d3.select(this)[0][0].classList;
+
             var daOrbit = d3.select(d3.select(this)[0][0].lastChild);
-            if ( d3.select(this)[0][0].classList.contains("clicked") ) {
+            if ( currentClasses.contains("clicked") ) {
+                d3.selectAll(".details")
+                    .classed("hidden",true);
+                d3.selectAll(".maintext")
+                    .classed("hidden",false);
                 d3.selectAll(".orbit")
                     .classed("clicked",false)
                     .transition()
@@ -449,6 +583,36 @@ function buildChart(){
                         .attr("transform", function(d) { return "translate("+ xy.x +","+ xy.y +")scale(1)"})
                 })
             } else {
+                if ( currentClasses.contains("topcircle") ){
+                    d3.selectAll(".details")
+                        .classed("hidden",true);
+                    d3.selectAll(".maintext")
+                        .classed("hidden",true);
+                    d3.selectAll(".croptext")
+                        .classed("hidden",false);
+                } else if ( currentClasses.contains("rightcircle") ){
+                    d3.selectAll(".details")
+                        .classed("hidden",true);
+                    d3.selectAll(".maintext")
+                        .classed("hidden",true);
+                    d3.selectAll(".techtext")
+                        .classed("hidden",false);
+                } else if ( currentClasses.contains("bottomcircle") ){
+                    d3.selectAll(".details")
+                        .classed("hidden",true);
+                    d3.selectAll(".maintext")
+                        .classed("hidden",true);
+                    d3.selectAll(".geogtext")
+                        .classed("hidden",false);
+                } else if ( currentClasses.contains("leftcircle") ){
+                    d3.selectAll(".details")
+                        .classed("hidden",true);
+                    d3.selectAll(".maintext")
+                        .classed("hidden",true);
+                    d3.selectAll(".climatetext")
+                        .classed("hidden",false);
+                }
+
                 d3.selectAll(".orbit")
                     .classed("clicked",false)
                     .transition()
