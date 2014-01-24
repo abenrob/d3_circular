@@ -10,7 +10,7 @@ var margin = {top: 40, right: 10, bottom: 40, left: 10},
     width = 700 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom,
     innerradius = height / 5,
-    smallradius = height / 11,
+    smallradius = height / 10.5,
     innersquareedge = Math.sqrt(Math.pow((innerradius * 2),2) / 2),
     outerradius = height / 2.8;
 
@@ -47,8 +47,6 @@ function buildChart(){
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom);
 
-
-
     var innercircle = svg.append("g")
         .classed("innercircle", true)
         .attr("transform", function(d) { return "translate("+ (width / 2) +","+ (height / 2 + margin.top) +")"; });
@@ -56,6 +54,9 @@ function buildChart(){
         .attr("cx", 0)
         .attr("cy", 0)
         .attr("r", innerradius)
+
+
+    // all center text hard coded, and display is controlled via css classes.     
     innercircle.append("text")
         .classed("maintext", true)
         .attr("x", 0)
@@ -220,10 +221,16 @@ function buildChart(){
         .attr("r", smallradius)
     topcircle.append("svg:image")
         .attr("xlink:href", "img/icon_CROPS.svg")
-        .attr("x", -50)
+        .attr("x", -40)
         .attr("y", -50)
-        .attr("width", "100")
-        .attr("height", "100");
+        .attr("width", "80")
+        .attr("height", "80")
+    topcircle.append("text")
+        .classed("studytext",true)
+        .text("CROPS")
+        .attr("text-anchor", "middle")
+        .attr("x", 0)
+        .attr("y", 25)
 
     // orbit surrounding circle
     var toporbit = topcircle.append("g")
@@ -301,10 +308,16 @@ function buildChart(){
         .attr("r", smallradius)
     rightcircle.append("svg:image")
         .attr("xlink:href", "img/icon_TECHNOLOGIES.svg")
-        .attr("x", -30)
+        .attr("x", -20)
         .attr("y", -30)
-        .attr("width", "60")
-        .attr("height", "60");
+        .attr("width", "40")
+        .attr("height", "40")
+    rightcircle.append("text")
+        .classed("studytext",true)
+        .text("TECHNOLOGIES")
+        .attr("text-anchor", "middle")
+        .attr("x", 0)
+        .attr("y", 25)
 
     //orbit surrounding circle
     var rightorbit = rightcircle.append("g")
@@ -382,10 +395,16 @@ function buildChart(){
         .attr("r", smallradius)
     leftcircle.append("svg:image")
         .attr("xlink:href", "img/icon_CLIMATE.svg")
-        .attr("x", -30)
+        .attr("x", -20)
         .attr("y", -30)
-        .attr("width", "60")
-        .attr("height", "60");
+        .attr("width", "40")
+        .attr("height", "40")
+    leftcircle.append("text")
+        .classed("studytext",true)
+        .text("CLIMATE")
+        .attr("text-anchor", "middle")
+        .attr("x", 0)
+        .attr("y", 25)
 
     //orbit surrounding circle
     var leftorbit = leftcircle.append("g")
@@ -461,10 +480,16 @@ function buildChart(){
         .attr("r", smallradius)
     bottomcircle.append("svg:image")
         .attr("xlink:href", "img/icon_GEOGRAPHY.svg")
-        .attr("x", -30)
+        .attr("x", -20)
         .attr("y", -30)
-        .attr("width", "60")
-        .attr("height", "60");
+        .attr("width", "40")
+        .attr("height", "40")
+    bottomcircle.append("text")
+        .classed("studytext",true)
+        .text("GEOGRAPHY")
+        .attr("text-anchor", "middle")
+        .attr("x", 0)
+        .attr("y", 25)
 
 
     //orbit surrounding circle
