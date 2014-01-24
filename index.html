@@ -6,37 +6,66 @@
 <script>
 
 //globals
-var margin = {top: 40, right: 10, bottom: 40, left: 10},
-    width = 700 - margin.left - margin.right,
-    height = 600 - margin.top - margin.bottom,
+var margin = {top: 100, right: 10, bottom: 100, left: 10},
+    width = 900 - margin.left - margin.right,
+    height = 700 - margin.top - margin.bottom,
     innerradius = height / 5,
-    smallradius = height / 10.5,
+    smallradius = height / 10,
+    orbitradius = smallradius * 2.15,
     innersquareedge = Math.sqrt(Math.pow((innerradius * 2),2) / 2),
     outerradius = height / 2.8;
 
 var plotdata = {
-    "crops":["rice","maize","wheat"],
-    "climate":["maize","wheat"],
-    "tech":["rice","maize","wheat","rice","maize","wheat","rice","maize","wheat","rice"],
-    "geog":["maize","wheat","rice","maize","wheat","rice"]
+    "crops":[["rice"],["maize"],["wheat"]],
+    "climate":[["Dry & cool"],["Wet & hot"]],
+    "tech":[
+        ["Drip","irrigation"],
+        ["Drought","tolerance"],
+        ["Heat","tolerance"],
+        ["Integrated","soil","fertility"],
+        ["Enhanced","nitrogen-use","efficiency"],
+        ["No-till"],
+        ["Precision","agriculture"],
+        ["Sprinkler","irrigation"],
+        ["Water","harvesting"],
+        ["Crop","protection:","diseases"],
+        ["Crop","protection:","insects"],
+        ["Crop","protection:","weeds"],
+    ],
+    "geog":[["world"],["regions"],["countries"]]
 }
 
-function getXY(classList, reset){
-    reset = reset || false;
-    var addon = 70;
+function getXY(classList, phase){ // phase = "far || near || reset"
+    var addon
+    if (phase == "near") {addon = 30}
+    else if (phase == "far") {addon = 70}
+    else addon = 0;
+
     if (classList.contains('topcircle')){
-        if (!reset){return {"x":width / 2, "y": height / 2 + margin.top - outerradius - addon}}
-        else {return {"x":width / 2, "y": height / 2 + margin.top - outerradius}}
+        return {"x":width / 2, "y": height / 2 + margin.top - outerradius - addon}
     } else if (classList.contains('bottomcircle')){
-        if (!reset){return {"x":width / 2, "y": height / 2 + margin.top + outerradius + addon}}
-        else {return {"x":width / 2, "y": height / 2 + margin.top + outerradius}}
+        return {"x":width / 2, "y": height / 2 + margin.top + outerradius + addon}
     } else if (classList.contains('rightcircle')){
-        if (!reset){return {"x":width / 2  + outerradius + addon, "y": height / 2 + margin.top}}
-        else {return {"x":width / 2  + outerradius, "y": height / 2 + margin.top}}
+        return {"x":width / 2  + outerradius + addon, "y": height / 2 + margin.top}
     } else if (classList.contains('leftcircle')){
-        if (!reset){return {"x":width / 2  - outerradius - addon, "y": height / 2 + margin.top}}
-        else {return {"x":width / 2  - outerradius, "y": height / 2 + margin.top}}
+        return {"x":width / 2  - outerradius - addon, "y": height / 2 + margin.top}
     }
+}
+
+function orbitXY(index, count){
+    var dist = orbitradius,
+        deg = (360 / count) * index,
+        rad;
+        if (deg > 180){ deg = deg - 180 } 
+        else { deg = deg + 180 }
+        rad = deg * (Math.PI / 180)
+    return {"x":dist * Math.sin(rad),"y":dist * Math.cos(rad)};
+}
+
+function textOffset(len,idx){
+    if ( len == 1 ) { return 4 }
+    else if ( len == 2 ) { return [-4,10][idx]; }
+    else if ( len == 3 ) { return [-8,4,16][idx]; }
 }
 
 function buildChart(){
@@ -241,62 +270,55 @@ function buildChart(){
         .classed("toporbit",true)
         .attr("cx", 0)
         .attr("cy", 0)
-        .attr("r", smallradius * 1.75)
-
+        .attr("r", orbitradius)
     var toporbitplanets = toporbit.selectAll(".topplanets")
         .data(plotdata.crops).enter();
     toporbitplanets.append("circle")
         .classed("planets",true)
         .classed("topcircle",true)
         .attr("cx", function(d,i){
-            var ct = plotdata.crops.length,
-                dist = smallradius * 1.75,
-                deg = (360 / ct) * i,
-                rad;
-                if (deg > 180){ deg = deg - 180 } 
-                else { deg = deg + 180 }
-                rad = deg * (Math.PI / 180)
-            return dist * Math.sin(rad);
+            return orbitXY(i,plotdata.crops.length).x;
         })
         .attr("cy", function(d,i){
-            var ct = plotdata.crops.length,
-                dist = smallradius * 1.75,
-                deg = (360 / ct) * i,
-                rad;
-                if (deg > 180){ deg = deg - 180 } 
-                else { deg = deg + 180 }
-                rad = deg * (Math.PI / 180)
-            return dist * Math.cos(rad);
+            return orbitXY(i,plotdata.crops.length).y;
         })
         .attr("r", smallradius / 2)
-    toporbitplanets.append("text")
+    var toporbittext = toporbitplanets.append("text")
         .classed("microtext",true)
-        .text(function(d){return d})
-        .attr("text-anchor", "middle")
         .attr("x", function(d,i){
-            var ct = plotdata.crops.length,
-                dist = smallradius * 1.75,
-                deg = (360 / ct) * i,
-                rad;
-                if (deg > 180){ deg = deg - 180 } 
-                else { deg = deg + 180 }
-                rad = deg * (Math.PI / 180)
-            return dist * Math.sin(rad);
+            return orbitXY(i,plotdata.crops.length).x;
         })
         .attr("y", function(d,i){
-            var ct = plotdata.crops.length,
-                dist = smallradius * 1.75,
-                deg = (360 / ct) * i,
-                rad;
-                if (deg > 180){ deg = deg - 180 } 
-                else { deg = deg + 180 }
-                rad = deg * (Math.PI / 180)
-            return dist * Math.cos(rad) + 7;
+            return orbitXY(i,plotdata.crops.length).y + 5;
+        })
+    var toporbitspans = toporbittext.selectAll("tspan")
+        .data(function(d,i){
+            var arr = [];
+            d.forEach(function(item,index,array){
+                var o = {"o_len":d.length, "o_idx":i, "data":item};
+                arr.push(o);
+            });
+            return arr;
+        }).enter();
+
+    toporbitspans.append("tspan")
+        .text(function(d){return d.data;})
+        .attr("text-anchor", "middle")
+        .attr("x",function(d,i){
+            return orbitXY(d.o_idx,plotdata.crops.length).x;
+        })
+        .attr("y",function(d,i){
+            var offset = textOffset(d.o_len,i);
+            return orbitXY(d.o_idx,plotdata.crops.length).y + offset;
         })
 
 
-
-
+    // technology
+        // technology
+            // technology
+                // technology
+                    // technology
+                        // technology
     // technology circle at right
     var rightcircle = svg.append("g")
         .classed("rightcircle", true)
@@ -328,7 +350,7 @@ function buildChart(){
         .classed("toporbit",true)
         .attr("cx", 0)
         .attr("cy", 0)
-        .attr("r", smallradius * 1.75)
+        .attr("r", orbitradius)
 
     var rightorbitplanets = rightorbit.selectAll(".rightplanets")
         .data(plotdata.tech).enter();
@@ -336,54 +358,49 @@ function buildChart(){
         .classed("planets",true)
         .classed("rightcircle",true)
         .attr("cx", function(d,i){
-            var ct = plotdata.tech.length,
-                dist = smallradius * 1.75,
-                deg = (360 / ct) * i,
-                rad;
-                if (deg > 180){ deg = deg - 180 } 
-                else { deg = deg + 180 }
-                rad = deg * (Math.PI / 180)
-            return dist * Math.sin(rad);
+            return orbitXY(i,plotdata.tech.length).x;
         })
         .attr("cy", function(d,i){
-            var ct = plotdata.tech.length,
-                dist = smallradius * 1.75,
-                deg = (360 / ct) * i,
-                rad;
-                if (deg > 180){ deg = deg - 180 } 
-                else { deg = deg + 180 }
-                rad = deg * (Math.PI / 180)
-            return dist * Math.cos(rad);
+            return orbitXY(i,plotdata.tech.length).y;
         })
         .attr("r", smallradius / 2)
-    rightorbitplanets.append("text")
+    var rightorbittext = rightorbitplanets.append("text")
         .classed("microtext",true)
-        .text(function(d){return d})
-        .attr("text-anchor", "middle")
+        //.text(function(d){return d})
         .attr("x", function(d,i){
-            var ct = plotdata.tech.length,
-                dist = smallradius * 1.75,
-                deg = (360 / ct) * i,
-                rad;
-                if (deg > 180){ deg = deg - 180 } 
-                else { deg = deg + 180 }
-                rad = deg * (Math.PI / 180)
-            return dist * Math.sin(rad);
+            return orbitXY(i,plotdata.tech.length).x;
         })
         .attr("y", function(d,i){
-            var ct = plotdata.tech.length,
-                dist = smallradius * 1.75,
-                deg = (360 / ct) * i,
-                rad;
-                if (deg > 180){ deg = deg - 180 } 
-                else { deg = deg + 180 }
-                rad = deg * (Math.PI / 180)
-            return dist * Math.cos(rad) + 7;
+            return orbitXY(i,plotdata.tech.length).y + 5;
+        })
+    var rightorbitspans = rightorbittext.selectAll("tspan")
+        .data(function(d,i){
+            var arr = [];
+            d.forEach(function(item,index,array){
+                var o = {"o_len":d.length, "o_idx":i, "data":item};
+                arr.push(o);
+            });
+            return arr;
+        }).enter();
+
+    rightorbitspans.append("tspan")
+        .text(function(d){return d.data;})
+        .attr("text-anchor", "middle")
+        .attr("x",function(d,i){
+            return orbitXY(d.o_idx,plotdata.tech.length).x;
+        })
+        .attr("y",function(d,i){
+            var offset = textOffset(d.o_len,i);
+            return orbitXY(d.o_idx,plotdata.tech.length).y + offset;
         })
 
 
 
-
+    // climate
+        // climate
+            // climate
+                // climate
+                    // climate
     // climate circle to left
     var leftcircle = svg.append("g")
         .classed("leftcircle", true)
@@ -415,7 +432,7 @@ function buildChart(){
         .classed("leftorbit",true)
         .attr("cx", 0)
         .attr("cy", 0)
-        .attr("r", smallradius * 1.75)
+        .attr("r", orbitradius)
 
     var leftorbitplanets = leftorbit.selectAll(".leftplanets")
         .data(plotdata.climate).enter();
@@ -423,51 +440,40 @@ function buildChart(){
         .classed("planets",true)
         .classed("leftcircle",true)
         .attr("cx", function(d,i){
-            var ct = plotdata.climate.length,
-                dist = smallradius * 1.75,
-                deg = (360 / ct) * i,
-                rad;
-                if (deg > 180){ deg = deg - 180 } 
-                else { deg = deg + 180 }
-                rad = deg * (Math.PI / 180)
-            return dist * Math.sin(rad);
+            return orbitXY(i,plotdata.climate.length).x;
         })
         .attr("cy", function(d,i){
-            var ct = plotdata.climate.length,
-                dist = smallradius * 1.75,
-                deg = (360 / ct) * i,
-                rad;
-                if (deg > 180){ deg = deg - 180 } 
-                else { deg = deg + 180 }
-                rad = deg * (Math.PI / 180)
-            return dist * Math.cos(rad);
+            return orbitXY(i,plotdata.climate.length).y;
         })
         .attr("r", smallradius / 2)
-   leftorbitplanets.append("text")
+    var leftorbittext = leftorbitplanets.append("text")
         .classed("microtext",true)
-        .text(function(d){return d})
-        .attr("text-anchor", "middle")
         .attr("x", function(d,i){
-            var ct = plotdata.climate.length,
-                dist = smallradius * 1.75,
-                deg = (360 / ct) * i,
-                rad;
-                if (deg > 180){ deg = deg - 180 } 
-                else { deg = deg + 180 }
-                rad = deg * (Math.PI / 180)
-            return dist * Math.sin(rad);
+            return orbitXY(i,plotdata.climate.length).x;
         })
         .attr("y", function(d,i){
-            var ct = plotdata.climate.length,
-                dist = smallradius * 1.75,
-                deg = (360 / ct) * i,
-                rad;
-                if (deg > 180){ deg = deg - 180 } 
-                else { deg = deg + 180 }
-                rad = deg * (Math.PI / 180)
-            return dist * Math.cos(rad) + 7;
+            return orbitXY(i,plotdata.climate.length).y + 5;
         })
+    var leftorbitspans = leftorbittext.selectAll("tspan")
+        .data(function(d,i){
+            var arr = [];
+            d.forEach(function(item,index,array){
+                var o = {"o_len":d.length, "o_idx":i, "data":item};
+                arr.push(o);
+            });
+            return arr;
+        }).enter();
 
+    leftorbitspans.append("tspan")
+        .text(function(d){return d.data;})
+        .attr("text-anchor", "middle")
+        .attr("x",function(d,i){
+            return orbitXY(d.o_idx,plotdata.climate.length).x;
+        })
+        .attr("y",function(d,i){
+            var offset = textOffset(d.o_len,i);
+            return orbitXY(d.o_idx,plotdata.climate.length).y + offset;
+        })
 
     // geography circle at bottom
     var bottomcircle = svg.append("g")
@@ -501,7 +507,7 @@ function buildChart(){
         .classed("bottomorbit",true)
         .attr("cx", 0)
         .attr("cy", 0)
-        .attr("r", smallradius * 1.75)
+        .attr("r", orbitradius)
 
     var bottomorbitplanets = bottomorbit.selectAll(".bottomplanets")
         .data(plotdata.geog).enter();
@@ -509,59 +515,50 @@ function buildChart(){
         .classed("planets",true)
         .classed("bottomcircle",true)
         .attr("cx", function(d,i){
-            var ct = plotdata.geog.length,
-                dist = smallradius * 1.75,
-                deg = (360 / ct) * i,
-                rad;
-                if (deg > 180){ deg = deg - 180 } 
-                else { deg = deg + 180 }
-                rad = deg * (Math.PI / 180)
-            return dist * Math.sin(rad);
+            return orbitXY(i,plotdata.geog.length).x;
         })
         .attr("cy", function(d,i){
-            var ct = plotdata.geog.length,
-                dist = smallradius * 1.75,
-                deg = (360 / ct) * i,
-                rad;
-                if (deg > 180){ deg = deg - 180 } 
-                else { deg = deg + 180 }
-                rad = deg * (Math.PI / 180)
-            return dist * Math.cos(rad);
+            return orbitXY(i,plotdata.geog.length).y;
         })
         .attr("r", smallradius / 2)
-   bottomorbitplanets.append("text")
+    var bottomorbittext = bottomorbitplanets.append("text")
         .classed("microtext",true)
-        .text(function(d){return d})
-        .attr("text-anchor", "middle")
         .attr("x", function(d,i){
-            var ct = plotdata.geog.length,
-                dist = smallradius * 1.75,
-                deg = (360 / ct) * i,
-                rad;
-                if (deg > 180){ deg = deg - 180 } 
-                else { deg = deg + 180 }
-                rad = deg * (Math.PI / 180)
-            return dist * Math.sin(rad);
+            return orbitXY(i,plotdata.geog.length).x;
         })
         .attr("y", function(d,i){
-            var ct = plotdata.geog.length,
-                dist = smallradius * 1.75,
-                deg = (360 / ct) * i,
-                rad;
-                if (deg > 180){ deg = deg - 180 } 
-                else { deg = deg + 180 }
-                rad = deg * (Math.PI / 180)
-            return dist * Math.cos(rad) + 7;
+            return orbitXY(i,plotdata.geog.length).y + 5;
+        })
+    var bottomorbitspans = bottomorbittext.selectAll("tspan")
+        .data(function(d,i){
+            var arr = [];
+            d.forEach(function(item,index,array){
+                var o = {"o_len":d.length, "o_idx":i, "data":item};
+                arr.push(o);
+            });
+            return arr;
+        }).enter();
+
+    bottomorbitspans.append("tspan")
+        .text(function(d){return d.data;})
+        .attr("text-anchor", "middle")
+        .attr("x",function(d,i){
+            return orbitXY(d.o_idx,plotdata.geog.length).x;
+        })
+        .attr("y",function(d,i){
+            var offset = textOffset(d.o_len,i);
+            return orbitXY(d.o_idx,plotdata.geog.length).y + offset;
         })
 
 
 
 
     d3.selectAll(".orbit")
+        .style("opacity",0)
         .attr("transform", function(d) { return "scale(0)"; });
-
     d3.select(".innercircle")
         .on("click",function(d){
+            // reset all
             d3.selectAll(".details")
                     .classed("hidden",true);
             d3.selectAll(".maintext")
@@ -569,13 +566,15 @@ function buildChart(){
             d3.selectAll(".orbit")
                     .classed("clicked",false)
                     .transition()
+                        .style("opacity",0)
                         .attr("transform", function(d) { return "scale(0)"; });
             d3.select(".innercircle").transition()
                     .attr("transform", function(d) { return "translate("+ (width / 2) +","+ (height / 2 + margin.top) +")scale(1)"; });
             var circles = d3.selectAll(".smallcircle")
                 .classed("greycircle", false)
+                .classed("clicked",false)
             circles.each(function(){
-                var xy = getXY(d3.select(this)[0][0].classList,true);
+                var xy = getXY(d3.select(this)[0][0].classList,"reset");
                 d3.select(this).transition()
                     .attr("transform", function(d) { return "translate("+ xy.x +","+ xy.y +")scale(1)"})
             })
@@ -586,6 +585,8 @@ function buildChart(){
             var currentClasses = d3.select(this)[0][0].classList;
 
             var daOrbit = d3.select(d3.select(this)[0][0].lastChild);
+
+            // reset if re-clicking
             if ( currentClasses.contains("clicked") ) {
                 d3.selectAll(".details")
                     .classed("hidden",true);
@@ -594,16 +595,17 @@ function buildChart(){
                 d3.selectAll(".orbit")
                     .classed("clicked",false)
                     .transition()
+                        .style("opacity",0)
                         .attr("transform", function(d) { return "scale(0)"; });
                 d3.select(".innercircle").transition()
                     .attr("transform", function(d) { return "translate("+ (width / 2) +","+ (height / 2 + margin.top) +")scale(1)"; });
-                var current = d3.select(this)
-                    .classed("clicked", false)
-                var others = d3.selectAll(".greycircle")
+
+                var others = d3.selectAll(".smallcircle")
                     .classed("greycircle", false)
+                    .classed("clicked", false)
                     
                 others.each(function(){
-                    var xy = getXY(d3.select(this)[0][0].classList,true);
+                    var xy = getXY(d3.select(this)[0][0].classList,"reset");
                     d3.select(this).transition()
                         .attr("transform", function(d) { return "translate("+ xy.x +","+ xy.y +")scale(1)"})
                 })
@@ -641,26 +643,31 @@ function buildChart(){
                 d3.selectAll(".orbit")
                     .classed("clicked",false)
                     .transition()
+                        .style("opacity",0)
                         .attr("transform", function(d) { return "scale(0)"; });
                 daOrbit
                     .classed("clicked",true)
                     .transition()
+                        .style("opacity",1)
                         .attr("transform", function(d) { return "scale(1)"; });
                 d3.select(".innercircle").transition()
                     .attr("transform", function(d) { return "translate("+ (width / 2) +","+ (height / 2 + margin.top) +")scale(.75)"; });
                 d3.selectAll(".smallcircle")
                     .classed("clicked", false)
+
+                // get the clicked circle    
                 var current = d3.select(this)
                     .classed("clicked",true)
                     .classed("greycircle",false)
-                var xy = getXY(d3.select(this)[0][0].classList,true);
+                var xy = getXY(d3.select(this)[0][0].classList,"near");
                 current.transition()
                     .attr("transform", function(d) { return "translate("+ xy.x +","+ xy.y +")scale(1)"})
                 
+                // get the non - clicked circles
                 var others = d3.selectAll(".smallcircle:not(.clicked)")
                     .classed("greycircle",true)  
                 others.each(function(){
-                    var xy = getXY(d3.select(this)[0][0].classList);
+                    var xy = getXY(d3.select(this)[0][0].classList,"far");
                     d3.select(this).transition()
                         .attr("transform", function(d) { return "translate("+ xy.x +","+ xy.y +")scale(0.7)"})
                 })
