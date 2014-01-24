@@ -27,7 +27,7 @@ body {
     font-size: 16px;
 }
 .hidden {
-    display: none;
+   /* display: none;*/
 }
 .outertext {
     fill: white;
