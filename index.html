@@ -6,7 +6,7 @@
 <script>
 
 //globals
-var margin = {top: 10, right: 10, bottom: 10, left: 10},
+var margin = {top: 30, right: 10, bottom: 30, left: 10},
     width = 700 - margin.left - margin.right,
     height = 600 - margin.top - margin.bottom,
     innerradius = height / 5,
@@ -14,9 +14,16 @@ var margin = {top: 10, right: 10, bottom: 10, left: 10},
     innersquareedge = Math.sqrt(Math.pow((innerradius * 2),2) / 2),
     outerradius = height / 3;
 
+var plotdata = {
+    "crops":["rice","maize","wheat"],
+    "climate":["maize","wheat"],
+    "tech":["rice","maize","wheat","rice","maize","wheat","rice","maize","wheat","rice"],
+    "geog":["maize","wheat","rice","maize","wheat","rice"]
+}
+
 function getXY(classList, reset){
     reset = reset || false;
-    var addon = 60;
+    var addon = 70;
     if (classList.contains('topcircle')){
         if (!reset){return {"x":width / 2, "y": height / 2 + margin.top - outerradius - addon}}
         else {return {"x":width / 2, "y": height / 2 + margin.top - outerradius}}
@@ -40,34 +47,33 @@ function buildChart(){
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom);
 
-    //Draw the Rectangle
 
-    var innercircle = svg.append("g");
 
-    innercircle.append("circle")
-        .classed("innergroup", true)
+    var innercircle = svg.append("g")
         .classed("innercircle", true)
-        .attr("cx", width / 2)
-        .attr("cy", height / 2 + margin.top)
+        .attr("transform", function(d) { return "translate("+ (width / 2) +","+ (height / 2 + margin.top) +")"; });
+    innercircle.append("circle")
+        .attr("cx", 0)
+        .attr("cy", 0)
         .attr("r", innerradius)
     innercircle.append("text")
         .classed("innergroup", true)
-        .classed("innertext", true)
-        .attr("x", width / 2)
-        .attr("y", height / 2 + margin.top)
+        .classed("maintext", true)
+        .attr("x", 0)
+        .attr("y", 0)
         .append("tspan")
-            .attr("x", width / 2)
-            .attr("y", height / 2 + margin.top + 15 - 40)
+            .attr("x", 0)
+            .attr("y", 15 - 40)
             .attr("text-anchor", "middle")
             .text("TITLE OF")
         .append("tspan")
-            .attr("x", width / 2)
-            .attr("y", height / 2 + margin.top + 15)
+            .attr("x", 0)
+            .attr("y", 15)
             .attr("text-anchor", "middle")
             .text("THE STUDY")
         .append("tspan")
-            .attr("x", width / 2)
-            .attr("y", height / 2 + margin.top + 15 + 40)
+            .attr("x", 0)
+            .attr("y", 15 + 40)
             .attr("text-anchor", "middle")
             .text("GOES HERE")
     var outercircle = svg.append("circle")
@@ -75,6 +81,11 @@ function buildChart(){
         .attr("cx", width / 2)
         .attr("cy", height / 2 + margin.top)
         .attr("r", outerradius)
+
+
+
+
+    // CROP circle (!!!) at top
     var topcircle = svg.append("g")
         .classed("topcircle", true)
         .classed("smallcircle", true)
@@ -89,6 +100,73 @@ function buildChart(){
         .attr("y", -50)
         .attr("width", "100")
         .attr("height", "100");
+
+    // orbit surrounding circle
+    var toporbit = topcircle.append("g")
+        .classed("orbit",true)
+        //.attr("transform", function(d) { return "translate(0,0)scale(0)"; });
+    toporbit.append("circle")
+        .classed("orbitcircle",true)
+        .classed("toporbit",true)
+        .attr("cx", 0)
+        .attr("cy", 0)
+        .attr("r", smallradius * 1.75)
+
+    var toporbitplanets = toporbit.selectAll(".topplanets")
+        .data(plotdata.crops).enter();
+    toporbitplanets.append("circle")
+        .classed("planets",true)
+        .classed("topcircle",true)
+        .attr("cx", function(d,i){
+            var ct = plotdata.crops.length,
+                dist = smallradius * 1.75,
+                deg = (360 / ct) * i,
+                rad;
+                if (deg > 180){ deg = deg - 180 } 
+                else { deg = deg + 180 }
+                rad = deg * (Math.PI / 180)
+            return dist * Math.sin(rad);
+        })
+        .attr("cy", function(d,i){
+            var ct = plotdata.crops.length,
+                dist = smallradius * 1.75,
+                deg = (360 / ct) * i,
+                rad;
+                if (deg > 180){ deg = deg - 180 } 
+                else { deg = deg + 180 }
+                rad = deg * (Math.PI / 180)
+            return dist * Math.cos(rad);
+        })
+        .attr("r", smallradius / 2)
+    toporbitplanets.append("text")
+        .classed("microtext",true)
+        .text(function(d){return d})
+        .attr("text-anchor", "middle")
+        .attr("x", function(d,i){
+            var ct = plotdata.crops.length,
+                dist = smallradius * 1.75,
+                deg = (360 / ct) * i,
+                rad;
+                if (deg > 180){ deg = deg - 180 } 
+                else { deg = deg + 180 }
+                rad = deg * (Math.PI / 180)
+            return dist * Math.sin(rad);
+        })
+        .attr("y", function(d,i){
+            var ct = plotdata.crops.length,
+                dist = smallradius * 1.75,
+                deg = (360 / ct) * i,
+                rad;
+                if (deg > 180){ deg = deg - 180 } 
+                else { deg = deg + 180 }
+                rad = deg * (Math.PI / 180)
+            return dist * Math.cos(rad) + 7;
+        })
+
+
+
+
+    // technology circle at right
     var rightcircle = svg.append("g")
         .classed("rightcircle", true)
         .classed("smallcircle", true)
@@ -103,6 +181,73 @@ function buildChart(){
         .attr("y", -30)
         .attr("width", "60")
         .attr("height", "60");
+
+    //orbit surrounding circle
+    var rightorbit = rightcircle.append("g")
+        .classed("orbit",true)
+        //.attr("transform", function(d) { return "translate(0,0)scale(0)"; });
+    rightorbit.append("circle")
+        .classed("orbitcircle",true)
+        .classed("toporbit",true)
+        .attr("cx", 0)
+        .attr("cy", 0)
+        .attr("r", smallradius * 1.75)
+
+    var rightorbitplanets = rightorbit.selectAll(".rightplanets")
+        .data(plotdata.tech).enter();
+    rightorbitplanets.append("circle")
+        .classed("planets",true)
+        .classed("rightcircle",true)
+        .attr("cx", function(d,i){
+            var ct = plotdata.tech.length,
+                dist = smallradius * 1.75,
+                deg = (360 / ct) * i,
+                rad;
+                if (deg > 180){ deg = deg - 180 } 
+                else { deg = deg + 180 }
+                rad = deg * (Math.PI / 180)
+            return dist * Math.sin(rad);
+        })
+        .attr("cy", function(d,i){
+            var ct = plotdata.tech.length,
+                dist = smallradius * 1.75,
+                deg = (360 / ct) * i,
+                rad;
+                if (deg > 180){ deg = deg - 180 } 
+                else { deg = deg + 180 }
+                rad = deg * (Math.PI / 180)
+            return dist * Math.cos(rad);
+        })
+        .attr("r", smallradius / 2)
+    rightorbitplanets.append("text")
+        .classed("microtext",true)
+        .text(function(d){return d})
+        .attr("text-anchor", "middle")
+        .attr("x", function(d,i){
+            var ct = plotdata.tech.length,
+                dist = smallradius * 1.75,
+                deg = (360 / ct) * i,
+                rad;
+                if (deg > 180){ deg = deg - 180 } 
+                else { deg = deg + 180 }
+                rad = deg * (Math.PI / 180)
+            return dist * Math.sin(rad);
+        })
+        .attr("y", function(d,i){
+            var ct = plotdata.tech.length,
+                dist = smallradius * 1.75,
+                deg = (360 / ct) * i,
+                rad;
+                if (deg > 180){ deg = deg - 180 } 
+                else { deg = deg + 180 }
+                rad = deg * (Math.PI / 180)
+            return dist * Math.cos(rad) + 7;
+        })
+
+
+
+
+    // climate circle to left
     var leftcircle = svg.append("g")
         .classed("leftcircle", true)
         .classed("smallcircle", true)
@@ -117,6 +262,71 @@ function buildChart(){
         .attr("y", -30)
         .attr("width", "60")
         .attr("height", "60");
+
+    //orbit surrounding circle
+    var leftorbit = leftcircle.append("g")
+        .classed("orbit",true)
+        //.attr("transform", function(d) { return "translate(0,0)scale(0)"; });
+    leftorbit.append("circle")
+        .classed("orbitcircle",true)
+        .classed("leftorbit",true)
+        .attr("cx", 0)
+        .attr("cy", 0)
+        .attr("r", smallradius * 1.75)
+
+    var leftorbitplanets = leftorbit.selectAll(".leftplanets")
+        .data(plotdata.climate).enter();
+    leftorbitplanets.append("circle")
+        .classed("planets",true)
+        .classed("leftcircle",true)
+        .attr("cx", function(d,i){
+            var ct = plotdata.climate.length,
+                dist = smallradius * 1.75,
+                deg = (360 / ct) * i,
+                rad;
+                if (deg > 180){ deg = deg - 180 } 
+                else { deg = deg + 180 }
+                rad = deg * (Math.PI / 180)
+            return dist * Math.sin(rad);
+        })
+        .attr("cy", function(d,i){
+            var ct = plotdata.climate.length,
+                dist = smallradius * 1.75,
+                deg = (360 / ct) * i,
+                rad;
+                if (deg > 180){ deg = deg - 180 } 
+                else { deg = deg + 180 }
+                rad = deg * (Math.PI / 180)
+            return dist * Math.cos(rad);
+        })
+        .attr("r", smallradius / 2)
+   leftorbitplanets.append("text")
+        .classed("microtext",true)
+        .text(function(d){return d})
+        .attr("text-anchor", "middle")
+        .attr("x", function(d,i){
+            var ct = plotdata.climate.length,
+                dist = smallradius * 1.75,
+                deg = (360 / ct) * i,
+                rad;
+                if (deg > 180){ deg = deg - 180 } 
+                else { deg = deg + 180 }
+                rad = deg * (Math.PI / 180)
+            return dist * Math.sin(rad);
+        })
+        .attr("y", function(d,i){
+            var ct = plotdata.climate.length,
+                dist = smallradius * 1.75,
+                deg = (360 / ct) * i,
+                rad;
+                if (deg > 180){ deg = deg - 180 } 
+                else { deg = deg + 180 }
+                rad = deg * (Math.PI / 180)
+            return dist * Math.cos(rad) + 7;
+        })
+
+
+    // geography circle at bottom
     var bottomcircle = svg.append("g")
         .classed("bottomcircle", true)
         .classed("smallcircle", true)
@@ -132,9 +342,102 @@ function buildChart(){
         .attr("width", "60")
         .attr("height", "60");
 
+
+    //orbit surrounding circle
+    var bottomorbit = bottomcircle.append("g")
+        .classed("orbit",true)
+        //.attr("transform", function(d) { return "translate(0,0)scale(0)"; });
+    bottomorbit.append("circle")
+        .classed("orbitcircle",true)
+        .classed("bottomorbit",true)
+        .attr("cx", 0)
+        .attr("cy", 0)
+        .attr("r", smallradius * 1.75)
+
+    var bottomorbitplanets = bottomorbit.selectAll(".bottomplanets")
+        .data(plotdata.geog).enter();
+    bottomorbitplanets.append("circle")
+        .classed("planets",true)
+        .classed("bottomcircle",true)
+        .attr("cx", function(d,i){
+            var ct = plotdata.geog.length,
+                dist = smallradius * 1.75,
+                deg = (360 / ct) * i,
+                rad;
+                if (deg > 180){ deg = deg - 180 } 
+                else { deg = deg + 180 }
+                rad = deg * (Math.PI / 180)
+            return dist * Math.sin(rad);
+        })
+        .attr("cy", function(d,i){
+            var ct = plotdata.geog.length,
+                dist = smallradius * 1.75,
+                deg = (360 / ct) * i,
+                rad;
+                if (deg > 180){ deg = deg - 180 } 
+                else { deg = deg + 180 }
+                rad = deg * (Math.PI / 180)
+            return dist * Math.cos(rad);
+        })
+        .attr("r", smallradius / 2)
+   bottomorbitplanets.append("text")
+        .classed("microtext",true)
+        .text(function(d){return d})
+        .attr("text-anchor", "middle")
+        .attr("x", function(d,i){
+            var ct = plotdata.geog.length,
+                dist = smallradius * 1.75,
+                deg = (360 / ct) * i,
+                rad;
+                if (deg > 180){ deg = deg - 180 } 
+                else { deg = deg + 180 }
+                rad = deg * (Math.PI / 180)
+            return dist * Math.sin(rad);
+        })
+        .attr("y", function(d,i){
+            var ct = plotdata.geog.length,
+                dist = smallradius * 1.75,
+                deg = (360 / ct) * i,
+                rad;
+                if (deg > 180){ deg = deg - 180 } 
+                else { deg = deg + 180 }
+                rad = deg * (Math.PI / 180)
+            return dist * Math.cos(rad) + 7;
+        })
+
+
+
+
+    d3.selectAll(".orbit")
+        .attr("transform", function(d) { return "scale(0)"; });
+
+    d3.select(".innercircle")
+        .on("click",function(d){
+            d3.selectAll(".orbit")
+                    .classed("clicked",false)
+                    .transition()
+                        .attr("transform", function(d) { return "scale(0)"; });
+            d3.select(".innercircle").transition()
+                    .attr("transform", function(d) { return "translate("+ (width / 2) +","+ (height / 2 + margin.top) +")scale(1)"; });
+            var circles = d3.selectAll(".smallcircle")
+                .classed("greycircle", false)
+            circles.each(function(){
+                var xy = getXY(d3.select(this)[0][0].classList,true);
+                d3.select(this).transition()
+                    .attr("transform", function(d) { return "translate("+ xy.x +","+ xy.y +")scale(1)"})
+            })
+        })
+
     d3.selectAll(".smallcircle")
         .on("click",function(d){
+            var daOrbit = d3.select(d3.select(this)[0][0].lastChild);
             if ( d3.select(this)[0][0].classList.contains("clicked") ) {
+                d3.selectAll(".orbit")
+                    .classed("clicked",false)
+                    .transition()
+                        .attr("transform", function(d) { return "scale(0)"; });
+                d3.select(".innercircle").transition()
+                    .attr("transform", function(d) { return "translate("+ (width / 2) +","+ (height / 2 + margin.top) +")scale(1)"; });
                 var current = d3.select(this)
                     .classed("clicked", false)
                 var others = d3.selectAll(".greycircle")
@@ -146,6 +449,16 @@ function buildChart(){
                         .attr("transform", function(d) { return "translate("+ xy.x +","+ xy.y +")scale(1)"})
                 })
             } else {
+                d3.selectAll(".orbit")
+                    .classed("clicked",false)
+                    .transition()
+                        .attr("transform", function(d) { return "scale(0)"; });
+                daOrbit
+                    .classed("clicked",true)
+                    .transition()
+                        .attr("transform", function(d) { return "scale(1)"; });
+                d3.select(".innercircle").transition()
+                    .attr("transform", function(d) { return "translate("+ (width / 2) +","+ (height / 2 + margin.top) +")scale(.75)"; });
                 d3.selectAll(".smallcircle")
                     .classed("clicked", false)
                 var current = d3.select(this)

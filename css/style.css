@@ -13,7 +13,7 @@ body {
     font: 10px;
     background-color: #bfd36a;
 }
-.innertext {
+.maintext {
     fill: #8C8C8C;
     font-size: 30px;
     font-weight: bold;
@@ -26,6 +26,7 @@ body {
 }
 .innercircle {
     fill: white;
+    cursor: pointer;
 }
 .outercircle {
     fill: none;
@@ -51,4 +52,18 @@ body {
 }
 .greycircle {
     fill: #8C8C8C;
+}
+.orbitcircle {
+    fill: none;
+    stroke: white;
+    stroke-width: 4;
+}
+.planets {
+    stroke: white;
+    stroke-width: 3;
+}
+.microtext {
+    fill: white;
+    stroke-width: 0;
+    font-size: 14px;
 }
