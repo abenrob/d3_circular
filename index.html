@@ -1,8 +1,10 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 <link rel="stylesheet" type="text/css" href="css/style.css">
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
+
 <script>
 
 //globals
@@ -35,19 +37,28 @@ var plotdata = {
     "geog":[["world"],["regions"],["countries"]]
 }
 
+function toArray(obj) {
+    var array = [];
+    // iterate backwards ensuring that length is an UInt32
+    for (var i = obj.length >>> 0; i--;) { 
+        array[i] = obj[i];
+    }
+    return array;
+}
+
 function getXY(classList, phase){ // phase = "far || near || reset"
-    var addon
+    var addon;
     if (phase == "near") {addon = 30}
     else if (phase == "far") {addon = 70}
     else addon = 0;
 
-    if (classList.contains('topcircle')){
+    if (classList.indexOf('topcircle') != -1){
         return {"x":width / 2, "y": height / 2 + margin.top - outerradius - addon}
-    } else if (classList.contains('bottomcircle')){
+    } else if (classList.indexOf('bottomcircle') != -1){
         return {"x":width / 2, "y": height / 2 + margin.top + outerradius + addon}
-    } else if (classList.contains('rightcircle')){
+    } else if (classList.indexOf('rightcircle') != -1){
         return {"x":width / 2  + outerradius + addon, "y": height / 2 + margin.top}
-    } else if (classList.contains('leftcircle')){
+    } else if (classList.indexOf('leftcircle') != -1){
         return {"x":width / 2  - outerradius - addon, "y": height / 2 + margin.top}
     }
 }
@@ -89,7 +100,13 @@ function resetAll(){
         .classed("greycircle", false)
         .classed("clicked",false)
     circles.each(function(){
-        var xy = getXY(d3.select(this)[0][0].classList,"reset");
+        var currentClasses;
+        if (d3.select(this)[0][0].classList){
+            currentClasses = toArray(d3.select(this)[0][0].classList);
+        } else {
+            currentClasses = d3.select(this)[0][0].className.baseVal.split(/\s+/g);
+        }
+        var xy = getXY(currentClasses,"reset");
         d3.select(this).transition()
             .attr("transform", function(d) { return "translate("+ xy.x +","+ xy.y +")scale(1)"})
     })
@@ -295,7 +312,7 @@ function buildChart(){
     // orbit surrounding circle
     var toporbit = topcircle.append("g")
         .classed("orbit",true)
-        //.attr("transform", function(d) { return "translate(0,0)scale(0)"; });
+        .attr("transform", function(d) { return "translate(0,0)scale(0)"; });
     toporbit.append("circle")
         .classed("orbitcircle",true)
         .classed("toporbit",true)
@@ -394,7 +411,6 @@ function buildChart(){
 
     var rightorbittext = rightorbitplanets.append("text")
         .classed("microtext",true)
-        //.text(function(d){return d})
         .attr("x", function(d,i){
             return orbitXY(i,plotdata.tech.length).x;
         })
@@ -450,7 +466,7 @@ function buildChart(){
     //orbit surrounding circle
     var leftorbit = leftcircle.append("g")
         .classed("orbit",true)
-        //.attr("transform", function(d) { return "translate(0,0)scale(0)"; });
+        .attr("transform", function(d) { return "translate(0,0)scale(0)"; });
     leftorbit.append("circle")
         .classed("orbitcircle",true)
         .classed("leftorbit",true)
@@ -528,7 +544,7 @@ function buildChart(){
     //orbit surrounding circle
     var bottomorbit = bottomcircle.append("g")
         .classed("orbit",true)
-        //.attr("transform", function(d) { return "translate(0,0)scale(0)"; });
+        .attr("transform", function(d) { return "translate(0,0)scale(0)"; });
     bottomorbit.append("circle")
         .classed("orbitcircle",true)
         .classed("bottomorbit",true)
@@ -598,12 +614,16 @@ function buildChart(){
 
     d3.selectAll(".smallcircle")
         .on("click",function(d){
-            var currentClasses = d3.select(this)[0][0].classList;
-
+            var currentClasses;
+            if (d3.select(this)[0][0].classList){
+                currentClasses = toArray(d3.select(this)[0][0].classList);
+            } else {
+                currentClasses = d3.select(this)[0][0].className.baseVal.split(/\s+/g);
+            }
             var daOrbit = d3.select(d3.select(this)[0][0].lastChild);
 
             // reset if re-clicking
-            if ( currentClasses.contains("clicked") ) {
+            if ( currentClasses.indexOf("clicked") != -1 ) {
                 d3.selectAll(".details").transition()
                     .style("opacity",0)
 
@@ -624,13 +644,19 @@ function buildChart(){
                     .classed("clicked", false)
                     
                 others.each(function(){
-                    var xy = getXY(d3.select(this)[0][0].classList,"reset");
+                    var currentClassesSmallCircle;
+                    if (d3.select(this)[0][0].classList){
+                        currentClassesSmallCircle = toArray(d3.select(this)[0][0].classList);
+                    } else {
+                        currentClassesSmallCircle = d3.select(this)[0][0].className.baseVal.split(/\s+/g);
+                    }
+                    var xy = getXY(currentClassesSmallCircle,"reset");
                     d3.select(this).transition()
                         .attr("transform", function(d) { return "translate("+ xy.x +","+ xy.y +")scale(1)"})
                 })
 
             } else {
-                if ( currentClasses.contains("topcircle") ){
+                if ( currentClasses.indexOf("topcircle") != -1 ){
                     d3.selectAll(".details").transition()
                         .style("opacity",0)
 
@@ -640,7 +666,7 @@ function buildChart(){
                     d3.selectAll(".croptext").transition()
                         .style("opacity",1)
 
-                } else if ( currentClasses.contains("rightcircle") ){
+                } else if ( currentClasses.indexOf("rightcircle") != -1 ){
                     d3.selectAll(".details").transition()
                         .style("opacity",0)
 
@@ -650,7 +676,7 @@ function buildChart(){
                     d3.selectAll(".techtext").transition()
                         .style("opacity",1)
 
-                } else if ( currentClasses.contains("bottomcircle") ){
+                } else if ( currentClasses.indexOf("bottomcircle") != -1 ){
                     d3.selectAll(".details").transition()
                         .style("opacity",0)
 
@@ -660,7 +686,7 @@ function buildChart(){
                     d3.selectAll(".geogtext").transition()
                         .style("opacity",1)
 
-                } else if ( currentClasses.contains("leftcircle") ){
+                } else if ( currentClasses.indexOf("leftcircle") != -1 ){
                     d3.selectAll(".details").transition()
                         .style("opacity",0)
 
@@ -681,7 +707,11 @@ function buildChart(){
                     .classed("clicked",true)
                     .transition()
                         .style("opacity",1)
-                        .attr("transform", function(d) { return "scale(1)"; });
+                        .attr("transform", function(d) { return "scale(1)"; })
+                        .each("end", function(){
+                            daOrbit.selectAll(".microtext")
+                                .classed("microtext_bold",true) // this makes absolutely no sense, but fixes the ie disappearing elements issue...
+                        });
 
                 d3.select(".innercircle").transition()
                     .attr("transform", function(d) { return "translate("+ (width / 2) +","+ (height / 2 + margin.top) +")scale(.75)"; });
@@ -694,7 +724,7 @@ function buildChart(){
                     .classed("clicked",true)
                     .classed("greycircle",false)
 
-                var xy = getXY(d3.select(this)[0][0].classList,"near");
+                var xy = getXY(currentClasses,"near");
                 current.transition()
                     .attr("transform", function(d) { return "translate("+ xy.x +","+ xy.y +")scale(1)"})
                 
@@ -702,7 +732,13 @@ function buildChart(){
                 var others = d3.selectAll(".smallcircle:not(.clicked)")
                     .classed("greycircle",true)  
                 others.each(function(){
-                    var xy = getXY(d3.select(this)[0][0].classList,"far");
+                    var currentClassesSmallCircleNotClicked;
+                    if (d3.select(this)[0][0].classList){
+                        currentClassesSmallCircleNotClicked = toArray(d3.select(this)[0][0].classList);
+                    } else {
+                        currentClassesSmallCircleNotClicked = d3.select(this)[0][0].className.baseVal.split(/\s+/g);
+                    }
+                    var xy = getXY(currentClassesSmallCircleNotClicked,"far");
                     d3.select(this).transition()
                         .attr("transform", function(d) { return "translate("+ xy.x +","+ xy.y +")scale(0.7)"})
                 })

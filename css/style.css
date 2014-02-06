@@ -86,3 +86,6 @@ body {
     stroke-width: 0;
     font-size: 8px;
 }
+.microtext_bold {
+    font-weight: bold;
+}
